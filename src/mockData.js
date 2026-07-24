@@ -1,12 +1,42 @@
 // Predefined initial data for the Buffalo Dairy Farm & Milk Shop Management System
-// This data will be loaded into localStorage on first load to allow dynamic editing.
+// Expanded to support complete dynamic Authentication, RBAC, and Employee Workbench databases.
 
 export const initialUsers = [
   {
     id: "owner-1",
+    employeeId: "EMP-001",
     name: "Shaik Muzammil",
+    email: "owner1@buffalo.com",
+    phone: "9988776655",
+    password: "owner123",
     role: "Owner",
-    username: "owner",
+    department: "Management",
+    status: "Active",
+    lastLogin: "2026-07-24 20:45:10",
+    avatar: "👑",
+    permissions: {
+      view: true,
+      add: true,
+      edit: true,
+      delete: true,
+      export: true,
+      viewFinancials: true,
+      viewSellingPrices: true,
+      viewPurchasePrices: true,
+      viewInventoryValue: true
+    }
+  },
+  {
+    id: "owner-2",
+    employeeId: "EMP-002",
+    name: "Jeshurun Owner",
+    email: "owner2@buffalo.com",
+    phone: "9876543211",
+    password: "owner123",
+    role: "Owner",
+    department: "Management",
+    status: "Active",
+    lastLogin: "2026-07-24 18:30:22",
     avatar: "👑",
     permissions: {
       view: true,
@@ -22,9 +52,15 @@ export const initialUsers = [
   },
   {
     id: "manager-1",
+    employeeId: "EMP-003",
     name: "Ramesh Kumar",
+    email: "manager@buffalo.com",
+    phone: "9765432101",
+    password: "manager123",
     role: "Farm Manager",
-    username: "manager",
+    department: "Farm Operations",
+    status: "Active",
+    lastLogin: "2026-07-24 09:12:05",
     avatar: "🚜",
     permissions: {
       view: true,
@@ -32,7 +68,7 @@ export const initialUsers = [
       edit: true,
       delete: false,
       export: true,
-      viewFinancials: false, // Hidden by default
+      viewFinancials: false, // Restricted by default
       viewSellingPrices: false,
       viewPurchasePrices: true,
       viewInventoryValue: false
@@ -40,9 +76,15 @@ export const initialUsers = [
   },
   {
     id: "shopkeeper-1",
+    employeeId: "EMP-004",
     name: "Anil Sharma",
+    email: "shopkeeper@buffalo.com",
+    phone: "9654321098",
+    password: "shop123",
     role: "Shop Keeper",
-    username: "shopkeeper",
+    department: "Retail Shop",
+    status: "Active",
+    lastLogin: "2026-07-24 10:05:44",
     avatar: "🏪",
     permissions: {
       view: true,
@@ -58,9 +100,15 @@ export const initialUsers = [
   },
   {
     id: "driver-1",
+    employeeId: "EMP-005",
     name: "Suresh Singh",
+    email: "driver@buffalo.com",
+    phone: "9543210987",
+    password: "driver123",
     role: "Driver",
-    username: "driver",
+    department: "Logistics",
+    status: "Active",
+    lastLogin: "2026-07-24 06:30:12",
     avatar: "🚚",
     permissions: {
       view: true,
@@ -69,16 +117,46 @@ export const initialUsers = [
       delete: false,
       export: false,
       viewFinancials: false,
-      viewSellingPrices: true, // Needed to show due amount
+      viewSellingPrices: true,
       viewPurchasePrices: false,
       viewInventoryValue: false
     }
   },
   {
     id: "worker-1",
+    employeeId: "EMP-006",
     name: "Mahesh Yadav",
+    email: "worker@buffalo.com",
+    phone: "9432109876",
+    password: "worker123",
     role: "Worker",
-    username: "worker",
+    department: "Farm Labor",
+    status: "Active",
+    lastLogin: "2026-07-24 07:00:00",
+    avatar: "🧑‍🌾",
+    permissions: {
+      view: true,
+      add: false,
+      edit: false,
+      delete: false,
+      export: false,
+      viewFinancials: false,
+      viewSellingPrices: false,
+      viewPurchasePrices: false,
+      viewInventoryValue: false
+    }
+  },
+  {
+    id: "worker-2",
+    employeeId: "EMP-007",
+    name: "Sunil Dutt",
+    email: "worker2@buffalo.com",
+    phone: "9321098765",
+    password: "worker123",
+    role: "Worker",
+    department: "Farm Labor",
+    status: "Active",
+    lastLogin: "2026-07-23 07:15:33",
     avatar: "🧑‍🌾",
     permissions: {
       view: true,
@@ -146,7 +224,7 @@ export const initialBuffalos = [
     status: "Pregnant",
     image: "🐄",
     milkHistory: [
-      { date: "2026-06-15", morning: 5.5, evening: 4.2 } // Dry now
+      { date: "2026-06-15", morning: 5.5, evening: 4.2 }
     ],
     pregnancies: [
       { expectedCalving: "2026-08-30", actualCalving: null, status: "Confirmed" }
@@ -196,7 +274,7 @@ export const initialOutlets = [
     contactPerson: "Rajesh Patel",
     mobile: "9876543210",
     address: "Shop 12, Market Square, Sector 4",
-    sellingPrice: 75, // per Litre
+    sellingPrice: 75,
     creditLimit: 25000,
     status: "Active",
     balance: 8500
@@ -242,7 +320,7 @@ export const initialProducts = [
     name: "Fresh Buffalo Milk",
     category: "Dairy",
     unit: "Litre",
-    purchasePrice: 65, // simulated value or internal cost
+    purchasePrice: 65,
     sellingPrice: 80,
     openingStock: 200,
     currentStock: 180,
@@ -269,7 +347,7 @@ export const initialProducts = [
     purchasePrice: 280,
     sellingPrice: 380,
     openingStock: 30,
-    currentStock: 8, // Triggers Low Stock Alert
+    currentStock: 8,
     minimumStock: 15,
     expiryDays: 5
   },
@@ -359,7 +437,7 @@ export const initialDriverPayments = [
     date: "2026-07-24",
     outletId: "out-1",
     outletName: "Green Valley Dairy Shop",
-    amountDue: 4500, // 60 Litres * 75
+    amountDue: 4500,
     amountCollected: 4000,
     paymentMethod: "UPI",
     remarks: "Partial payment, balance in next cycle",
@@ -370,7 +448,7 @@ export const initialDriverPayments = [
     date: "2026-07-24",
     outletId: "out-2",
     outletName: "Royal Plaza Hotel",
-    amountDue: 3900, // 50 Litres * 78
+    amountDue: 3900,
     amountCollected: 3900,
     paymentMethod: "Cash",
     remarks: "Full settlement",
@@ -407,13 +485,26 @@ export const initialShopPurchases = [
 ];
 
 export const initialWorkers = [
-  { id: "wk-1", name: "Mahesh Yadav", role: "Milker", monthlySalary: 15000, advanceGiven: 2000, duties: "Morning & Evening milking sessions", attendance: "Present" },
-  { id: "wk-2", name: "Sunil Dutt", role: "Cleaner", monthlySalary: 12000, advanceGiven: 0, duties: "Barn washing and feed mixing", attendance: "Present" },
-  { id: "wk-3", name: "Karan Johar", role: "Feeder", monthlySalary: 13000, advanceGiven: 1000, duties: "Feed distribution and water refilling", attendance: "Absent" }
+  { id: "wk-1", employeeId: "EMP-006", name: "Mahesh Yadav", role: "Milker", monthlySalary: 15000, advanceGiven: 2000, duties: "Morning & Evening milking sessions", attendance: "Present" },
+  { id: "wk-2", employeeId: "EMP-007", name: "Sunil Dutt", role: "Cleaner", monthlySalary: 12000, advanceGiven: 0, duties: "Barn washing and feed mixing", attendance: "Present" }
 ];
 
 export const initialFarmExpenses = [
   { id: "exp-1", date: "2026-07-24", category: "Feed", details: "Sudan grass and concentrate feed purchase", amount: 18500, supplier: "Kisan Cattle Feed Store", billAttached: true },
   { id: "exp-2", date: "2026-07-23", category: "Medicine", details: "Antibiotics & Dewormers", amount: 2200, supplier: "Vet Pharma Ltd", billAttached: false },
   { id: "exp-3", date: "2026-07-22", category: "Labor", details: "Monthly advance payments", amount: 3000, supplier: "Workers Advance", billAttached: false }
+];
+
+export const initialTasks = [
+  { id: "tsk-1", employeeId: "EMP-006", employeeName: "Mahesh Yadav", taskName: "Morning Milking", description: "Collect milk from sections A and B", status: "Completed", progress: 100, dueDate: "2026-07-24" },
+  { id: "tsk-2", employeeId: "EMP-006", employeeName: "Mahesh Yadav", taskName: "Evening Milking", description: "Collect milk from sections C and D", status: "Pending", progress: 0, dueDate: "2026-07-24" },
+  { id: "tsk-3", employeeId: "EMP-007", employeeName: "Sunil Dutt", taskName: "Clean Barn A", description: "Wash and spray disinfectant in barn A", status: "In Progress", progress: 60, dueDate: "2026-07-24" },
+  { id: "tsk-4", employeeId: "EMP-003", employeeName: "Ramesh Kumar", taskName: "Inventory Audit", description: "Count all feed stock in warehouse", status: "Pending", progress: 0, dueDate: "2026-07-25" }
+];
+
+export const initialAttendance = [
+  { id: "att-1", employeeId: "EMP-006", employeeName: "Mahesh Yadav", date: "2026-07-24", status: "Present", checkInTime: "06:45 AM", checkOutTime: "—" },
+  { id: "att-2", employeeId: "EMP-007", employeeName: "Sunil Dutt", date: "2026-07-24", status: "Present", checkInTime: "07:05 AM", checkOutTime: "—" },
+  { id: "att-3", employeeId: "EMP-006", employeeName: "Mahesh Yadav", date: "2026-07-23", status: "Present", checkInTime: "06:30 AM", checkOutTime: "06:00 PM" },
+  { id: "att-4", employeeId: "EMP-007", employeeName: "Sunil Dutt", date: "2026-07-23", status: "Present", checkInTime: "06:55 AM", checkOutTime: "06:00 PM" }
 ];
