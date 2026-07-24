@@ -81,6 +81,14 @@ export default function App() {
   const [activeModal, setActiveModal] = useState(null); // 'add-buffalo', 'view-buffalo', 'log-production', 'log-distribution', 'add-sale', 'add-purchase', 'add-expense', 'add-outlet', 'add-payment'
   const [selectedBuffalo, setSelectedBuffalo] = useState(null);
 
+  // --- Login State Management ---
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('buf_is_logged_in') === 'true';
+  });
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
   // Sync to local storage
   useEffect(() => {
     localStorage.setItem('buf_users', JSON.stringify(users));
@@ -134,11 +142,55 @@ export default function App() {
     localStorage.setItem('buf_farm_expenses', JSON.stringify(farmExpenses));
   }, [farmExpenses]);
 
+  useEffect(() => {
+    localStorage.setItem('buf_is_logged_in', isLoggedIn ? 'true' : 'false');
+  }, [isLoggedIn]);
+
+  // --- Login Submission Handler ---
+  const handleLoginSubmit = (e) => {
+    if (e) e.preventDefault();
+    setLoginError('');
+
+    // Predefined credentials
+    const creds = {
+      'admin': { password: 'admin123', userId: 'owner-1' },
+      'manager': { password: 'manager123', userId: 'manager-1' },
+      'shopkeeper': { password: 'shop123', userId: 'shopkeeper-1' },
+      'driver': { password: 'driver123', userId: 'driver-1' },
+      'worker': { password: 'worker123', userId: 'worker-1' }
+    };
+
+    const targetUser = loginUsername.toLowerCase().trim();
+    const userCred = creds[targetUser];
+    if (userCred && userCred.password === loginPassword) {
+      const matchedUser = users.find(u => u.id === userCred.userId);
+      if (matchedUser) {
+        setActiveUser(matchedUser);
+        setIsLoggedIn(true);
+        setLoginUsername('');
+        setLoginPassword('');
+        setLoginError('');
+        
+        // Auto routing based on role
+        if (matchedUser.role === 'Owner') setCurrentTab('dashboard');
+        else if (matchedUser.role === 'Farm Manager') setCurrentTab('animals');
+        else if (matchedUser.role === 'Shop Keeper') setCurrentTab('shop');
+        else if (matchedUser.role === 'Driver') setCurrentTab('distribution');
+        else if (matchedUser.role === 'Worker') setCurrentTab('workers');
+      } else {
+        setLoginError('Error: User record not found.');
+      }
+    } else {
+      setLoginError('Invalid username or password.');
+    }
+  };
+
   // --- Quick User Switcher ---
   const handleUserChange = (userId) => {
     const found = users.find(u => u.id === userId);
     if (found) {
       setActiveUser(found);
+      setIsLoggedIn(true); // Switcher logs you in automatically
       // Auto routing based on role permissions
       if (found.role === 'Owner') setCurrentTab('dashboard');
       else if (found.role === 'Farm Manager') setCurrentTab('animals');
@@ -451,6 +503,96 @@ export default function App() {
   const isDriver = activeUser.role === 'Driver';
   const isWorker = activeUser.role === 'Worker';
 
+  if (!isLoggedIn) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: 'var(--bg-dark)',
+        backgroundImage: 'radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 50%)',
+        fontFamily: 'var(--font-sans)',
+        padding: '20px'
+      }}>
+        <div className="glass-card" style={{
+          width: '100%',
+          maxWidth: '420px',
+          padding: '40px 30px',
+          border: '1px solid var(--border-glass)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+          boxShadow: 'var(--shadow-premium)'
+        }}>
+          <div style={{textAlign: 'center'}}>
+            <span style={{fontSize: '54px', animation: 'float 3s ease-in-out infinite', display: 'inline-block'}}>🐄</span>
+            <h2 style={{fontSize: '24px', fontWeight: '800', marginTop: '12px', background: 'linear-gradient(135deg, #ffffff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+              Buffalo Dairy Farm OS
+            </h2>
+            <p style={{fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px'}}>Sign in to your work panel</p>
+          </div>
+
+          <form onSubmit={handleLoginSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+            {loginError && (
+              <div style={{padding: '10px 14px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--accent-error)', borderRadius: '6px', color: 'var(--accent-error)', fontSize: '12.5px', textAlign: 'center'}}>
+                {loginError}
+              </div>
+            )}
+            
+            <div className="form-group">
+              <label className="form-label">Username</label>
+              <input 
+                type="text" 
+                className="form-input" 
+                placeholder="Enter username" 
+                value={loginUsername} 
+                onChange={(e) => setLoginUsername(e.target.value)} 
+                required 
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input 
+                type="password" 
+                className="form-input" 
+                placeholder="Enter password" 
+                value={loginPassword} 
+                onChange={(e) => setLoginPassword(e.target.value)} 
+                required 
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary" style={{width: '100%', padding: '12px', fontSize: '15px', marginTop: '8px'}}>
+              Sign In
+            </button>
+          </form>
+
+          <div style={{borderTop: '1px solid var(--border-glass)', paddingTop: '20px'}}>
+            <p style={{fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px', textAlign: 'center'}}>
+              Demo Credentials (Click to pre-fill)
+            </p>
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px'}}>
+              <button className="btn btn-secondary" style={{padding: '6px 10px', fontSize: '11px', whiteSpace: 'nowrap'}} onClick={() => { setLoginUsername('admin'); setLoginPassword('admin123'); }}>
+                👑 Admin/Owner
+              </button>
+              <button className="btn btn-secondary" style={{padding: '6px 10px', fontSize: '11px', whiteSpace: 'nowrap'}} onClick={() => { setLoginUsername('shopkeeper'); setLoginPassword('shop123'); }}>
+                🏪 Shop Keeper
+              </button>
+              <button className="btn btn-secondary" style={{padding: '6px 10px', fontSize: '11px', whiteSpace: 'nowrap'}} onClick={() => { setLoginUsername('manager'); setLoginPassword('manager123'); }}>
+                🚜 Farm Manager
+              </button>
+              <button className="btn btn-secondary" style={{padding: '6px 10px', fontSize: '11px', whiteSpace: 'nowrap'}} onClick={() => { setLoginUsername('driver'); setLoginPassword('driver123'); }}>
+                🚚 Driver
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       
@@ -544,6 +686,11 @@ export default function App() {
               </li>
             </>
           )}
+
+          {/* Logout Option */}
+          <li className="nav-item" onClick={() => setIsLoggedIn(false)} style={{marginTop: 'auto', color: 'var(--accent-error)'}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout Session
+          </li>
         </ul>
 
         <div className="nav-footer" style={{fontSize: '11px', color: 'var(--text-muted)', padding: '12px'}}>
