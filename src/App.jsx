@@ -5,7 +5,25 @@ export default function App() {
   // --- Persistent Local Database State ---
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('buf_users');
-    return saved ? JSON.parse(saved) : mockData.initialUsers;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Sanity check: Ensure records contain the 'email' property
+        if (parsed.length > 0 && parsed[0].email) {
+          return parsed;
+        }
+      } catch (e) {
+        // Safe catch
+      }
+      // Outdated database format detected. Clear cache values to reload fresh mockData.
+      const keys = [
+        'buf_users', 'buf_active_user_id', 'buf_buffalos', 'buf_outlets', 'buf_products',
+        'buf_milk_production', 'buf_milk_distribution', 'buf_driver_payments', 'buf_driver_settlements',
+        'buf_shop_sales', 'buf_shop_purchases', 'buf_workers', 'buf_farm_expenses', 'buf_tasks', 'buf_attendance', 'buf_is_logged_in'
+      ];
+      keys.forEach(k => localStorage.removeItem(k));
+    }
+    return mockData.initialUsers;
   });
 
   const [activeUser, setActiveUser] = useState(() => {
@@ -206,7 +224,7 @@ export default function App() {
     setTabLoading(true);
     
     setTimeout(() => {
-      const user = users.find(u => u.email.toLowerCase().trim() === loginEmail.toLowerCase().trim());
+      const user = users.find(u => u.email && u.email.toLowerCase().trim() === loginEmail.toLowerCase().trim());
       
       if (!user) {
         setTabLoading(false);
